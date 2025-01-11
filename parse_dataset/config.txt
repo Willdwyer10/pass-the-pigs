@@ -1,0 +1,6 @@
+j = Leaning Jowler
+s = Snout
+t = Trotter
+r = Razorback
+b = Black Dot Side
+c = Clear (no dot) Side

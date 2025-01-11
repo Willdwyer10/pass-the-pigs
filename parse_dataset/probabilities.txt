@@ -1,0 +1,7 @@
+symbol|description|probability
+j|Leaning Jowler|0.27
+s|Snout|2.07
+t|Trotter|7.40
+r|Razorback|31.93
+b|Black Dot Side|23.87
+c|Clear (no dot) Side|34.47
