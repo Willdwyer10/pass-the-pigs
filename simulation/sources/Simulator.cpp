@@ -1,8 +1,10 @@
 #include "Simulator.h"
 
+#include <algorithm>
 #include <iostream>
 #include <limits>
 
+/*
 // Create a Simluator object taking in a reference to a PigRoller object
 Simulator::Simulator(PigRoller& pigRoller)
   : pigRoller(pigRoller)
@@ -77,4 +79,82 @@ int Simulator::singleGameNumTurns(int targetPoints, int threshold)
     }
 
     return numTurns;
+}
+*/
+
+Simulator::Simulator(std::vector<Player> &otherPlayers)
+  : otherPlayers(otherPlayers)
+{}
+
+std::pair<double, int> Simulator::optimalThresholdForPlayer(Player &playerToOptimize)
+{
+    int optimalThreshold = 0;
+    double maxWinPercentage = 0.0;
+    for(int threshold = 1; threshold <= playerToOptimize.getTargetPoints(); threshold++)
+    {
+        auto playerThisThreshold = Player(playerToOptimize, threshold);
+        double winPercentage = simulateBatchOfGames(playerThisThreshold);
+        //std::cout << "At a threshold of " << threshold << " player won " << winPercentage << "% of the time\n";
+        if(winPercentage > maxWinPercentage)
+        {
+            //std::cout << "optimal threshold being updated\n";
+            maxWinPercentage = winPercentage;
+            optimalThreshold = threshold;
+        }
+    }
+
+    return std::pair<double, int>(maxWinPercentage, optimalThreshold);
+}
+
+double Simulator::simulateBatchOfGames(Player &playerToOptimize)
+{
+    const int numTrials = 1000;
+    int numWon = 0;
+    for(int i = 0; i < numTrials; i++)
+    {
+        if(simulateSingleGame(playerToOptimize))
+        {
+            numWon += 1;
+        }
+        playerToOptimize.reset();
+        resetOtherPlayers();
+    }
+    return 100.0 * numWon / numTrials;
+}
+
+bool Simulator::simulateSingleGame(Player &playerToOptimize)
+{
+    while(!gameIsOver(playerToOptimize))
+    {
+        //std::cout << "Round starting\n";
+        //std::cout << "\t(" << playerToOptimize.getName() << ") threshold " << playerToOptimize.getThreshold() << " start with: " << playerToOptimize.getCurrentScore();
+        playerToOptimize.rollPigs();
+        //std::cout << " now has: " << playerToOptimize.getCurrentScore() << std::endl;
+        for(auto& player : otherPlayers) {
+            //std::cout << "\t("<< player.getName() << ") threshold " << player.getThreshold() << " start with: " << player.getCurrentScore();
+            player.rollPigs();
+            //std::cout << " now has: " << player.getCurrentScore() << std::endl;
+        }
+    }
+
+    // Note: It is possible that another player from otherPlayers has also won this round;
+    // however, we simulate the game starting from the playerToOptimize's turn, so if
+    // the playerToOptimize has won, they won before any other player's turn
+    return playerToOptimize.hasWon();
+}
+
+bool Simulator::gameIsOver(Player &playerToOptimize)
+{
+    bool anyPlayerHasWon = std::any_of(otherPlayers.begin(), otherPlayers.end(), [](auto& player) {
+        return player.hasWon();
+    });
+
+    return playerToOptimize.hasWon() || anyPlayerHasWon;
+}
+
+void Simulator::resetOtherPlayers()
+{
+    for(auto& player : otherPlayers) {
+        player.reset();
+    }
 }

@@ -16,6 +16,7 @@ set(SOURCES
     sources/GameCoordinator.cpp
     sources/Pig.cpp
     sources/PigRoller.cpp
+    sources/Player.cpp
     sources/Simulator.cpp
 )
 

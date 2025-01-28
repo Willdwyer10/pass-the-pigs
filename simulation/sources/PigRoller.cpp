@@ -16,7 +16,8 @@ int PigRoller::roll()
     char pig2Res = pig2.roll();
     // std::cout << "pig1res=" << pig1Res << " pig2res=" << pig2Res << "\t";
     // Check combinations and score accordingly
-    if (pig1Res == pig2Res) {
+    if (pig1Res == pig2Res) 
+    {
         // Same positions (Doubles)
         if (pig1Res == 'j') return 60; // Leaning Jowler double
         if (pig1Res == 's') return 40; // Snout double
@@ -25,10 +26,12 @@ int PigRoller::roll()
         if (pig1Res == 'b') return 1;  // Black Dot Side double
         if (pig1Res == 'c') return 1;  // Clear (no dot) Side double
     }
-    else if ((pig1Res == 'b' && pig2Res == 'c') || (pig1Res == 'c' && pig2Res == 'b')) {
+    else if ((pig1Res == 'b' && pig2Res == 'c') || (pig1Res == 'c' && pig2Res == 'b')) 
+    {
         return 0;  // Black Dot Side + Clear Side = Pig Out
     }
-    else {
+    else 
+    {
         // Any other combination is just the sum of the two positions
         int totalScore = 0;
 
